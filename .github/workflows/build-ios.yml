@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-ios:
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -72,7 +72,6 @@ jobs:
           EXTENSION_DIR="build/Payload/TgWsProxy.app/PlugIns/TgWsProxyLiveActivity.appex"
           mkdir -p "$EXTENSION_DIR"
 
-          # LiveActivity extension needs the shared attributes type from the main app
           swiftc \
             -target arm64-apple-ios16.1 \
             -sdk "$SDK" \
@@ -90,7 +89,6 @@ jobs:
 
           strip -x "$EXTENSION_DIR/TgWsProxyLiveActivity" 2>/dev/null || true
 
-          # Copy extension Info.plist
           cp TgWsProxy/LiveActivity/Info.plist "$EXTENSION_DIR/Info.plist"
           echo "LiveActivity extension compiled successfully."
 
@@ -100,7 +98,6 @@ jobs:
           set -euo pipefail
           APP_DIR="build/Payload/TgWsProxy.app"
 
-          # Copy main app Info.plist & entitlements
           cp TgWsProxy/Resources/Info.plist "$APP_DIR/Info.plist"
           cp TgWsProxy/Resources/TgWsProxy.entitlements "$APP_DIR/TgWsProxy.entitlements"
           echo -n "APPL????" > "$APP_DIR/PkgInfo"
@@ -117,7 +114,7 @@ jobs:
           echo "IPA size: $(du -h ../TgWsProxy-unsigned.ipa | cut -f1)"
 
       - name: Upload IPA
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: TgWsProxy-unsigned-ipa
           path: ios-app/TgWsProxy-unsigned.ipa
